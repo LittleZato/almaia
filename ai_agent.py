@@ -8,8 +8,8 @@ class CodingAgent:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY no está configurada en las variables de entorno.")
         self.client = genai.Client(api_key=self.api_key)
-        # Nombre de modelo compatible y actualizado
-        self.model_name = "gemini-2.0-flash"
+        # Actualizado al modelo soportado
+        self.model_name = "gemini-3.8-flash"
 
     def analyze_repository(self, repo_name: str, file_tree: list, file_contents: dict, prompt: str) -> str:
         context = f"### Repositorio: {repo_name}\n\n### Estructura del Proyecto:\n"
