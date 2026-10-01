@@ -14,7 +14,7 @@ intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 def split_text(text: str, max_length: int = 1900):
-    """Divide respuestas largas en fragmentos seguros para Discord."""
+    """Divide respuestas largas en fragmentos seguros para el límite de Discord."""
     chunks = []
     while len(text) > max_length:
         split_index = text.rfind("\n", 0, max_length)
@@ -43,7 +43,11 @@ async def repos(interaction: discord.Interaction):
                         await interaction.followup.send("📁 No se encontraron repositorios.")
                         return
                     
-                    repos_formatted = "\n".join([f"• `{r}`" for r in lista_repos])
+                    # Formatea diccionarios o strings limpiamente
+                    repos_formatted = "\n".join([
+                        f"• `{r['full_name'] if isinstance(r, dict) and 'full_name' in r else r.get('name', r) if isinstance(r, dict) else r}`"
+                        for r in lista_repos
+                    ])
                     mensaje = f"**📁 Repositorios disponibles en tu GitHub:**\n{repos_formatted}"
                     
                     for chunk in split_text(mensaje):
