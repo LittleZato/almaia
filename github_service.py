@@ -9,16 +9,25 @@ class GitHubService:
         self.gh = Github(self.token)
 
     def get_user_repositories(self):
-        """Obtiene los repositorios del usuario (alias alineado con main.py)."""
+        """Obtiene los repositorios del usuario."""
         user = self.gh.get_user()
         return [{"name": repo.name, "full_name": repo.full_name, "private": repo.private} for repo in user.get_repos()]
 
     def list_repositories(self):
         return self.get_user_repositories()
 
-    def get_repo_structure(self, repo_name: str, path: str = "") -> list:
+    def _get_repo_instance(self, repo_name: str):
+        """Obtiene la instancia del repositorio manejando nombres cortos o completos (owner/repo)."""
         user = self.gh.get_user()
-        repo = user.get_repo(repo_name)
+        if "/" in repo_name:
+            return self.gh.get_repo(repo_name)
+        try:
+            return user.get_repo(repo_name)
+        except Exception:
+            return self.gh.get_repo(f"{user.login}/{repo_name}")
+
+    def get_repo_structure(self, repo_name: str, path: str = "") -> list:
+        repo = self._get_repo_instance(repo_name)
         contents = repo.get_contents(path)
         ignored_dirs = {"node_modules", ".git", "venv", "__pycache__", "dist", "build", ".venv"}
         file_tree = []
@@ -31,13 +40,12 @@ class GitHubService:
         return file_tree
 
     def read_file_content(self, repo_name: str, file_path: str) -> str:
-        user = self.gh.get_user()
-        repo = user.get_repo(repo_name)
+        repo = self._get_repo_instance(repo_name)
         try:
             file_content = repo.get_contents(file_path)
             return file_content.decoded_content.decode("utf-8")
         except Exception as e:
             return f"Error al leer el archivo {file_path}: {str(e)}"
 
-# Instancia exportable que lee main.py
+# Instancia exportable
 github_service = GitHubService()
