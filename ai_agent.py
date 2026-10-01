@@ -1,5 +1,6 @@
 import os
 from google import genai
+from google.genai import types
 
 class CodingAgent:
     def __init__(self, api_key: str = None):
@@ -7,7 +8,8 @@ class CodingAgent:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY no está configurada en las variables de entorno.")
         self.client = genai.Client(api_key=self.api_key)
-        self.model_name = "gemini-2.5-flash"
+        # Nombre de modelo compatible y actualizado
+        self.model_name = "gemini-2.0-flash"
 
     def analyze_repository(self, repo_name: str, file_tree: list, file_contents: dict, prompt: str) -> str:
         context = f"### Repositorio: {repo_name}\n\n### Estructura del Proyecto:\n"
@@ -27,9 +29,11 @@ class CodingAgent:
         response = self.client.models.generate_content(
             model=self.model_name,
             contents=user_message,
-            config={"system_instruction": system_instruction},
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction,
+            ),
         )
         return response.text
 
-# Instancia lista para ser importada por main.py
+# Instancia exportable
 agent = CodingAgent()
