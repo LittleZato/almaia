@@ -4,9 +4,11 @@ from typing import List, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# Mantén tus importaciones originales de servicios
-from github_service import github_service
+# Mantén tus importaciones originales de servicio
 from agent_service import agent
+from github_service import GitHubService
+
+github_service = GitHubService()
 
 app = FastAPI(
     title="Agente IA de Programación",
