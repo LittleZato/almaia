@@ -8,15 +8,19 @@ class GitHubService:
             raise ValueError("GITHUB_TOKEN no está configurado en las variables de entorno.")
         self.gh = Github(self.token)
 
-    def list_repositories(self):
+    def get_user_repositories(self):
+        """Obtiene los repositorios del usuario (alias alineado con main.py)."""
         user = self.gh.get_user()
         return [{"name": repo.name, "full_name": repo.full_name, "private": repo.private} for repo in user.get_repos()]
+
+    def list_repositories(self):
+        return self.get_user_repositories()
 
     def get_repo_structure(self, repo_name: str, path: str = "") -> list:
         user = self.gh.get_user()
         repo = user.get_repo(repo_name)
         contents = repo.get_contents(path)
-        ignored_dirs = {"node_modules", ".git", "venv", "__pycache__", "dist", "build"}
+        ignored_dirs = {"node_modules", ".git", "venv", "__pycache__", "dist", "build", ".venv"}
         file_tree = []
         while contents:
             file_content = contents.pop(0)
@@ -34,3 +38,6 @@ class GitHubService:
             return file_content.decoded_content.decode("utf-8")
         except Exception as e:
             return f"Error al leer el archivo {file_path}: {str(e)}"
+
+# Instancia exportable que lee main.py
+github_service = GitHubService()
