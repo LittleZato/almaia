@@ -40,20 +40,27 @@ def analyze_repo(request: AnalysisRequest):
     try:
         file_tree = github_service.get_repo_structure(request.repo_name)
         file_contents = {}
-        files_to_read = request.target_files or [f for f in file_tree if f.endswith((".py", ".js", ".java", ".cpp", ".html"))][:5]
-        
+        files_to_read = request.target_files or [
+            f for f in file_tree if f.endswith((".py", ".js", ".java", ".cpp", ".html"))
+        ][:5]
+
         for path in files_to_read:
             file_contents[path] = github_service.read_file_content(request.repo_name, path)
-            
+
         answer = agent.analyze_repository(
             repo_name=request.repo_name,
             file_tree=file_tree,
             file_contents=file_contents,
             prompt=request.prompt,
         )
-        return {"repo_name": request.repo_name, "files_analyzed": list(file_contents.keys()), "response": answer}
+        return {
+            "repo_name": request.repo_name,
+            "files_analyzed": list(file_contents.keys()),
+            "response": answer,
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        traceback.print_exc()  # imprime el error real en la terminal
+        raise HTTPException(status_code=500, detail=f"{type(e).__name__}: {e}")
 
 if __name__ == "__main__":
     import uvicorn
