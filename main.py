@@ -5,10 +5,12 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 # Mantén tus importaciones originales de servicio
-from agent_service import agent
 from github_service import GitHubService
+from ai_agent import AIAgent  # O el nombre de la clase/función que tengas dentro de ai_agent.py
 
+# Instancia los servicios
 github_service = GitHubService()
+agent = AIAgent()
 
 app = FastAPI(
     title="Agente IA de Programación",
