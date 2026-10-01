@@ -30,3 +30,6 @@ class CodingAgent:
             config={"system_instruction": system_instruction},
         )
         return response.text
+
+# Instancia lista para ser importada por main.py
+agent = CodingAgent()

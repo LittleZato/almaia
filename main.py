@@ -4,13 +4,8 @@ from typing import List, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# Mantén tus importaciones originales de servicio
-from github_service import GitHubService
-from ai_agent import AIAgent  # O el nombre de la clase/función que tengas dentro de ai_agent.py
-
-# Instancia los servicios
-github_service = GitHubService()
-agent = AIAgent()
+from github_service import github_service
+from ai_agent import agent
 
 app = FastAPI(
     title="Agente IA de Programación",
@@ -58,8 +53,8 @@ def analyze_repo(request: AnalysisRequest):
         return {
             "repo_name": request.repo_name,
             "files_analyzed": list(file_contents.keys()),
-            "analysis": answer,  # Sincronizado con bot.py
+            "analysis": answer,
         }
     except Exception as e:
-        traceback.print_exc()  # Imprime el traceback exacto en los logs de Render
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"{type(e).__name__}: {e}")
